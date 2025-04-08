@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Backend Dev",
+      "type": "shell",
+      "command": "npx nx run backend:serve:development --skip-nx-cache",
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend Dev",
+      "type": "shell",
+      "command": "npx nx run frontend:serve:development --skip-nx-cache",
+      "problemMatcher": []
+    },
+    {
+      "label": "Whole App Dev",
+      "dependsOn": ["Backend Dev", "Frontend Dev"],
+      "problemMatcher": []
+    }
+  ]
+}

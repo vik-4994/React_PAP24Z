@@ -1,0 +1,64 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_APP_BASE_URL: https://unipool-built.onrender.com/
+      NODE_ENV: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+        
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps --production=false
+        
+      - name: Remove old dist folder
+        run: |
+          rm -rf dist
+          mkdir dist
+        
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        
+      - name: Build Backend
+        run: npx nx build backend --skip-nx-cache
+        
+      - name: Build Frontend
+        run: npx nx build frontend --skip-nx-cache
+        
+      - name: Copy package-lock.json to dist
+        run: cp package-lock.json dist
+        
+      - name: Copy package.json to dist
+        run: cp package.json dist
+        
+      - name: Prepare Prisma Migrations
+        run: |
+          mkdir -p dist/prisma/migrations
+          cp -r prisma/migrations dist/prisma/migrations
+          cp prisma/schema.prisma dist/prisma
+        
+      - name: Pushes to another repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN }}
+        with:
+          source-directory: 'dist'
+          destination-github-username: 'ozoq'
+          destination-repository-name: 'unipool-built'
+          user-email: 41898282+github-actions[bot]@users.noreply.github.com
+          target-branch: main
+      

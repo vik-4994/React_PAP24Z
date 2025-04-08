@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String               @id
+  first_name         String
+  last_name          String
+  accessToken        String
+  accessTokenSecret  String
+  updatedAt          DateTime             @updatedAt
+  preferences        PreferenceExchange[]
+  acceptedExchanges1 AcceptedExchange[]   @relation("Student1")
+  acceptedExchanges2 AcceptedExchange[]   @relation("Student2")
+}
+
+model OauthTemporal {
+  oauthToken       String   @id
+  oauthTokenSecret String
+  createdAt        DateTime @default(now())
+}
+
+model PreferenceExchange {
+  id                 String   @id @default(cuid())
+  userId             String
+  subjectName        String
+  termId             String
+  currentGroupNumber Int
+  desiredGroupNumber Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id])
+}
+
+model AcceptedExchange {
+  id          String   @id @default(cuid())
+  subjectName String
+  student1Id  String
+  student2Id  String
+  groupFrom1  Int
+  groupTo1    Int
+  groupFrom2  Int
+  groupTo2    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  completed   Boolean  @default(false)
+
+  student1 User @relation("Student1", fields: [student1Id], references: [id])
+  student2 User @relation("Student2", fields: [student2Id], references: [id])
+
+  @@unique([subjectName, student1Id, student2Id, groupFrom1, groupTo1, groupFrom2, groupTo2, completed], map: "unique_accepted_exchange")
+}
+
+model Code {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  subjects  String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

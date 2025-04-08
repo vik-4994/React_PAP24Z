@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@": ["libs/shadcn/src/index.ts"],
+      "@/*": ["libs/shadcn/src/*"],
+      "*": ["node_modules/*"]
+    }
+  },
+  "references": [{ "path": "./libs/shadcn" }]
+}
