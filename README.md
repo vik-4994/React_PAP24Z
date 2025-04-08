@@ -2,11 +2,8 @@
 
 Exchange your 8:00 lab on Monday to a better timeslot!
 
-## Authors
+## Author
 
-- Iosif Zytnikau
-- Andrii Rybachok
-- Matvii Ivashchenko
 - Ihor Gavrylenko
 
 # Running
